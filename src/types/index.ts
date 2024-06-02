@@ -25,3 +25,19 @@ export const EditProjectSchema = ProjectSchema.pick({
 export type Project= z.infer<typeof ProjectSchema>
 
 export type ProjectFormData= Pick<Project, 'clientName' | 'projectName' | 'description' >
+
+//Task
+
+export const TaskStatusSchema = z.enum(['pending', 'onHold' , 'inProgress' , 'underReview' , 'completed'])
+
+export const TaskSchema = z.object({
+    _id: z.string(),
+    name: z.string(),
+    description: z.string(),
+    project: z.string(),
+    status: TaskStatusSchema 
+})
+
+export type Task = z.infer<typeof TaskSchema>
+
+export type TaskFormData = Pick<Task, 'name' | 'description'>

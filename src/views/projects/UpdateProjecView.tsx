@@ -11,17 +11,11 @@ export default function UpdateProjecView() {
     const {data,isLoading,isError} = useQuery({
         queryKey:['editproject',projectId],
         queryFn: () =>getProjectById(projectId!),
-        retry:2
+        retry:false
     })
-
-    console.log(projectId)
-    console.log(data)
-    console.log(isError)
 
     if(isLoading) return 'Cargando...'
     if(isError) return <Navigate to='/404'/>
     if(data) return <EditProjectForm project={data} projectId={projectId!}/>
 
-
-  
 }

@@ -1,17 +1,17 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import ProjectForm from "@/components/projects/ProjectForm";
 import { Project, ProjectFormData } from "@/types/index";
 import { updateProject } from "@/api/ProjectApi";
 import { toast } from "react-toastify";
 
 type EditProjectFormProps = {
-    project:ProjectFormData
-    projectId: Project['_id']
+  project: ProjectFormData
+  projectId: Project['_id']
 }
 
-export default function EditProjectForm({project,projectId} : EditProjectFormProps) {
+export default function EditProjectForm({ project, projectId }: EditProjectFormProps) {
 
   const navigate = useNavigate();
 
@@ -20,28 +20,35 @@ export default function EditProjectForm({project,projectId} : EditProjectFormPro
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({ defaultValues: { 
-        clientName: project.clientName,
-        projectName: project.projectName,
-        description: project.description,
-     } });
+  } = useForm({
+    defaultValues: {
+      clientName: project.clientName,
+      projectName: project.projectName,
+      description: project.description,
+    }
+  });
 
   //React Query
-  const {mutate} = useMutation({
+
+  const queryClient = useQueryClient()
+
+  const { mutate } = useMutation({
     mutationFn: updateProject,
     onError: (error) => {
-    toast.error(error.message)  
+      toast.error(error.message)
     },
     onSuccess: (data) => {
-    toast.success(data)
-    navigate('/')
+      queryClient.invalidateQueries({ queryKey: ['projects'] })
+      queryClient.invalidateQueries({ queryKey: ['editproject', projectId] })
+      toast.success(data)
+      navigate('/')
     }
   })
 
-  const handleForm = (formData : ProjectFormData) => {
+  const handleForm = (formData: ProjectFormData) => {
     const data = {
-        formData,
-        projectId
+      formData,
+      projectId
     }
     mutate(data)
   }
